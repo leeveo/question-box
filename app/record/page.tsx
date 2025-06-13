@@ -6,11 +6,11 @@ import VideoRecorder from './components/VideoRecorder';
 export default function RecordPage() {
   // Liste des questions à afficher
   const questions = [
-    "Quel est votre parcours professionnel ?",
-    "Quelles sont vos principales compétences techniques ?",
-    "Parlez-nous d'un défi que vous avez surmonté récemment.",
-    "Où vous voyez-vous dans 5 ans ?",
-    "Quelle est votre plus grande réalisation professionnelle ?"
+    "Quelle place TF1 occupe-t-elle selon vous dans l’histoire de la télévision française ?",
+    "Quel programme culte diffusé sur TF1 vous a le plus marqué dans votre jeunesse ?",
+    "Quel présentateur ou présentatrice emblématique de TF1 associez-vous le plus à la chaîne ?",
+    "Comment TF1 a-t-elle changé selon vous entre les années 1990 et aujourd’hui ?",
+    "Quelle place TF1 occupe-t-elle selon vous dans l’histoire de la télévision française ?"
   ];
 
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
