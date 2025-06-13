@@ -224,20 +224,43 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
     try {
       setUploadStatus("Envoi en cours vers AWS S3...");
       
+      // Check video size and warn if it's large
+      const videoSizeMB = videoBlob.size / (1024 * 1024);
+      console.log(`Video size: ${videoSizeMB.toFixed(2)} MB`);
+      
+      if (videoSizeMB > 20) {
+        console.warn(`Large video detected (${videoSizeMB.toFixed(2)} MB). Upload may fail.`);
+        setUploadStatus(`Envoi en cours (fichier volumineux: ${videoSizeMB.toFixed(1)} MB)...`);
+      }
+      
       const formData = new FormData();
       const fileName = `video-interview-${new Date().toISOString().replace(/[:.]/g, '-')}`;
       formData.append("video", videoBlob, `${fileName}.webm`);
       formData.append("fileName", fileName);
       
-      // Make sure we're using the correct API endpoint
+      // Make the upload request with a longer timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60-second timeout
+      
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
+        signal: controller.signal
       });
       
+      clearTimeout(timeoutId);
+      
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(`Erreur de serveur: ${response.status} - ${errorData.error || ''}`);
+        let errorMessage = `Erreur de serveur: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage += ` - ${errorData.error || ''}`;
+          console.error("Détails de l'erreur:", errorData.details);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (_) {
+          console.error("Impossible de parser l'erreur JSON");
+        }
+        throw new Error(errorMessage);
       }
       
       const result = await response.json();
