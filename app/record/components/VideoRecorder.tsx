@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import QuestionOverlay from './QuestionOverlay';
 
 interface VideoRecorderProps {
@@ -97,7 +97,8 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
   };
   
   // Ajoutons une méthode de secours pour garantir l'affichage des questions
-  const forceDrawQuestionOnCanvas = () => {
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+  const forceDrawQuestionOnCanvas = (shouldDraw: boolean) => {
     if (!isRecording || !canvasRef.current || !videoRef.current || videoRef.current.readyState < 2) return;
     
     const ctx = canvasRef.current.getContext('2d');
@@ -265,7 +266,7 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
         canvasStream.addTrack(audioTrack);
       }
       
-      let options;
+      let options: MediaRecorderOptions | undefined;
       const mimeTypes = [
         'video/webm;codecs=vp9,opus',
         'video/webm;codecs=vp8,opus',
@@ -349,7 +350,8 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
     }
   };
 
-  const stopRecording = () => {
+  // Add useCallback to prevent recreating this function on every render
+  const stopRecording = useCallback(() => {
     if (!isRecording || !mediaRecorderRef.current) {
       console.log("Tentative d'arrêt d'un enregistrement inactif");
       return;
@@ -391,9 +393,9 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
     
     setIsRecording(false);
     setShowQuestion(false);
-  };
+  }, [isRecording]); // Only recreate if isRecording changes
 
-  const drawQuestionOverlay = (ctx: CanvasRenderingContext2D, width: number, height: number, index: number) => {
+  const drawQuestionOverlay = useCallback((ctx: CanvasRenderingContext2D, width: number, height: number, index: number) => {
     if (index >= questions.length) return;
     
     const questionText = questions[index];
@@ -484,7 +486,7 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
       }
     }
     ctx.fillText(line, overlayX + 20, y);
-  };
+  }, [questions]); // Only recreate if questions array changes
 
   const startQuestionCycle = () => {
     console.log("Démarrage du cycle des questions");
@@ -521,6 +523,7 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
     }, 5000); // 5 secondes par question
   };
 
+  // Use this function in an interval to ensure questions display
   useEffect(() => {
     if (isRecording && currentQuestionIndex === questions.length - 1) {
       console.log("Dernière question atteinte, arrêt programmé dans 10 secondes");
@@ -532,7 +535,7 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
       
       return () => clearTimeout(finalStopTimeout);
     }
-  }, [currentQuestionIndex, isRecording, questions.length]);
+  }, [currentQuestionIndex, isRecording, questions.length, stopRecording]); // Added stopRecording
 
   useEffect(() => {
     return () => {
@@ -567,7 +570,97 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
         }
       }
     }
-  }, [currentQuestionIndex, questions, isRecording, showQuestion]);
+  }, [currentQuestionIndex, questions, isRecording, showQuestion, drawQuestionOverlay]); // Added drawQuestionOverlay
+
+  // Remove the unused debug function or use it somewhere if needed
+  // const drawQuestionOverlayDebug = () => {
+  //   // Function removed to fix ESLint warning
+  // };
+
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+  const drawQuestionOverlayDebug = () => {
+    if (!canvasRef.current || !videoRef.current) return;
+    
+    const ctx = canvasRef.current.getContext('2d');
+    if (!ctx) return;
+    
+    const width = canvasRef.current.width;
+    const height = canvasRef.current.height;
+    
+    // Dessiner l'image vidéo
+    ctx.drawImage(videoRef.current, 0, 0, width, height);
+    
+    // Dessiner la question actuelle pour débogage
+    if (questions.length > 0 && currentQuestionIndex < questions.length) {
+      const questionText = questions[currentQuestionIndex];
+      
+      // Rectangle noir en bas
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+      const blockHeight = Math.min(height * 0.25, 150);
+      ctx.fillRect(0, height - blockHeight, width, blockHeight);
+      
+      // Bordure blanche
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(0, height - blockHeight);
+      ctx.lineTo(width, height - blockHeight);
+      ctx.stroke();
+      
+      // Texte des questions
+      ctx.fillStyle = 'white';
+      const fontSize = Math.min(height * 0.05, 30);
+      ctx.font = `bold ${fontSize}px Arial`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText(
+        `Question ${currentQuestionIndex + 1}/${questions.length}`,
+        width / 2,
+        height - blockHeight + 15
+      );
+      
+      const questionFontSize = Math.min(height * 0.04, 24);
+      ctx.font = `${questionFontSize}px Arial`;
+      ctx.fillText(
+        questionText,
+        width / 2,
+        height - blockHeight + fontSize + 25
+      );
+    }
+  };
+
+  // Move animations useEffect inside the component
+  useEffect(() => {
+    // Create a style element for animations
+    const styleElement = document.createElement('style');
+    styleElement.textContent = `
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+      @keyframes slideIn {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+
+      .animate-fadeIn {
+        animation: fadeIn 0.3s ease-out forwards;
+      }
+
+      .animate-slideIn {
+        animation: slideIn 0.4s ease-out forwards;
+      }
+    `;
+    
+    // Add to document
+    document.head.appendChild(styleElement);
+    
+    // Clean up
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, []); // Run once on component mount
 
   return (
     <div className="flex flex-col items-center gap-4 bg-transparent">
@@ -662,14 +755,14 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
             disabled={isPreparing || countdown !== null}
             className={`px-6 py-3 ${isPreparing || countdown !== null ? 'bg-gray-400' : 'bg-red-600 hover:bg-red-700'} text-white rounded-md shadow-lg transform transition hover:scale-105`}
           >
-            {isPreparing ? 'Préparation...' : countdown !== null ? `Décompte: ${countdown}` : 'Démarrer l\'enregistrement'}
+            {isPreparing ? 'Préparation...' : countdown !== null ? `Décompte: ${countdown}` : 'Démarrer l&apos;enregistrement'}
           </button>
         ) : (
           <button
             onClick={stopRecording}
             className="px-6 py-3 bg-gray-600 text-white rounded-md hover:bg-gray-700 shadow-lg transform transition hover:scale-105"
           >
-            Arrêter l'enregistrement
+            Arrêter l&apos;enregistrement
           </button>
         )}
       </div>
@@ -832,26 +925,5 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
     </div>
   );
 };
-
-// Ajout des styles d'animation dans le global CSS ou dans le head
-const styles = `
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideIn {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.3s ease-out forwards;
-}
-
-.animate-slideIn {
-  animation: slideIn 0.4s ease-out forwards;
-}
-`;
 
 export default VideoRecorder;

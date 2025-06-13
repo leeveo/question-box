@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "clean": "rimraf .next",
+    "build": "npm run clean && next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -27,6 +28,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
+    "rimraf": "^5.0.10",
     "tailwindcss": "^4.1.10",
     "typescript": "^5"
   }

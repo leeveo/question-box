@@ -51,7 +51,10 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Erreur lors de l'enregistrement de la vidéo:", error);
     return NextResponse.json(
-      { error: "Erreur lors de l'enregistrement de la vidéo", details: error.message },
+      { 
+        error: "Erreur lors de l'enregistrement de la vidéo", 
+        details: error instanceof Error ? error.message : "Unknown error" 
+      },
       { status: 500 }
     );
   }

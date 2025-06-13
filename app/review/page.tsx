@@ -14,7 +14,7 @@ export default function ReviewPage() {
       if (savedVideoURL) {
         setVideoURL(savedVideoURL);
       } else {
-        setError('Aucune vidéo trouvée. Veuillez d\'abord enregistrer une vidéo.');
+        setError('Aucune vidéo trouvée. Veuillez d&apos;abord enregistrer une vidéo.');
       }
     } catch (error) {
       console.error('Erreur lors de la récupération de la vidéo:', error);
@@ -84,7 +84,7 @@ export default function ReviewPage() {
                 href="/record"
                 className="px-6 py-3 bg-gray-600 text-white rounded-md hover:bg-gray-700 shadow-lg"
               >
-                Retour à l'enregistrement
+                Retour à l&apos;enregistrement
               </Link>
             </div>
           </div>
@@ -93,6 +93,9 @@ export default function ReviewPage() {
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white"></div>
           </div>
         )}
+        <p className="text-white p-4 text-center">
+          Aucune vidéo n&apos;est disponible pour le moment. Veuillez retourner à la page d&apos;enregistrement.
+        </p>
       </div>
     </div>
   );
