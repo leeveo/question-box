@@ -222,55 +222,53 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
   // Fonction pour envoyer la vidéo au serveur
   const uploadVideoToServer = async (videoBlob: Blob) => {
     try {
-      setUploadStatus("Envoi en cours vers AWS S3...");
+      setUploadStatus("Préparation de l'envoi vers AWS S3...");
       
       // Check video size and warn if it's large
       const videoSizeMB = videoBlob.size / (1024 * 1024);
       console.log(`Video size: ${videoSizeMB.toFixed(2)} MB`);
       
       if (videoSizeMB > 20) {
-        console.warn(`Large video detected (${videoSizeMB.toFixed(2)} MB). Upload may fail.`);
-        setUploadStatus(`Envoi en cours (fichier volumineux: ${videoSizeMB.toFixed(1)} MB)...`);
+        console.warn(`Large video detected (${videoSizeMB.toFixed(2)} MB). Using direct S3 upload.`);
+        setUploadStatus(`Préparation de l'envoi direct (${videoSizeMB.toFixed(1)} MB)...`);
       }
       
-      const formData = new FormData();
+      // Generate a unique filename
       const fileName = `video-interview-${new Date().toISOString().replace(/[:.]/g, '-')}`;
-      formData.append("video", videoBlob, `${fileName}.webm`);
-      formData.append("fileName", fileName);
       
-      // Make the upload request with a longer timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60-second timeout
+      // Step 1: Get a pre-signed URL for direct S3 upload
+      const urlResponse = await fetch(
+        `/api/get-upload-url?fileName=${encodeURIComponent(fileName)}&fileType=${encodeURIComponent(videoBlob.type)}`
+      );
       
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-        signal: controller.signal
+      if (!urlResponse.ok) {
+        throw new Error(`Failed to get upload URL: ${urlResponse.status}`);
+      }
+      
+      const { presignedUrl, publicUrl } = await urlResponse.json();
+      
+      // Step 2: Upload directly to S3 using the pre-signed URL
+      setUploadStatus(`Envoi en cours vers AWS S3 (${videoSizeMB.toFixed(1)} MB)...`);
+      
+      const uploadResponse = await fetch(presignedUrl, {
+        method: 'PUT',
+        body: videoBlob,
+        headers: {
+          'Content-Type': videoBlob.type,
+        }
       });
       
-      clearTimeout(timeoutId);
-      
-      if (!response.ok) {
-        let errorMessage = `Erreur de serveur: ${response.status}`;
-        try {
-          const errorData = await response.json();
-          errorMessage += ` - ${errorData.error || ''}`;
-          console.error("Détails de l'erreur:", errorData.details);
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (_) {
-          console.error("Impossible de parser l'erreur JSON");
-        }
-        throw new Error(errorMessage);
+      if (!uploadResponse.ok) {
+        throw new Error(`Failed to upload to S3: ${uploadResponse.status}`);
       }
       
-      const result = await response.json();
       setUploadStatus("Vidéo enregistrée avec succès sur AWS S3!");
-      setSavedVideoPath(result.filePath);
+      setSavedVideoPath(publicUrl);
       
-      return result.filePath;
+      return publicUrl;
     } catch (error) {
       console.error("Erreur lors de l'envoi de la vidéo:", error);
-      setUploadStatus("Échec de l'enregistrement sur AWS S3");
+      setUploadStatus(`Échec de l'enregistrement sur AWS S3: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
       return null;
     }
   };
@@ -380,11 +378,12 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
         }
       }
       
-      // IMPORTANT: MediaRecorder avec paramètres optimisés
+      // IMPORTANT: MediaRecorder avec paramètres optimisés pour taille réduite
       const mediaRecorder = new MediaRecorder(canvasStream, {
         ...options,
-        videoBitsPerSecond: 5000000, // Augmenter la qualité vidéo
-        mimeType: options?.mimeType || 'video/webm;codecs=vp9,opus'
+        videoBitsPerSecond: 2500000, // Réduire à 2.5 Mbps pour une taille plus petite
+        audioBitsPerSecond: 128000,  // Réduire à 128 kbps pour l'audio
+        mimeType: options?.mimeType || 'video/webm;codecs=vp8,opus' // vp8 est généralement plus léger que vp9
       });
       mediaRecorderRef.current = mediaRecorder;
       
