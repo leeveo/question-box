@@ -1,13 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import fs from 'fs';
-import path from "path";
+import { NextResponse } from "next/server";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
     const formData = await request.formData();
-    const videoFile = formData.get("video") as File | null;
-    let fileName = formData.get("fileName") as string || `interview-${Date.now()}`;
+    const videoFile = formData.get("video") as File;
+    const fileName = formData.get("fileName") as string || `video-${Date.now()}`;
 
     if (!videoFile) {
       return NextResponse.json(
@@ -16,46 +14,53 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Sanitize filename - replace colons and other invalid characters
-    fileName = fileName.replace(/[/:*?"<>|\\]/g, '-');
-    
-    // Create a safe unique filename
-    const uniqueFileName = `${fileName}-${Date.now()}.webm`;
-
-    // Ensure the uploads directory exists
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    
-    // Check if directory exists and create it if it doesn't
-    if (!fs.existsSync(uploadDir)) {
-      console.log(`Creating directory: ${uploadDir}`);
-      await mkdir(uploadDir, { recursive: true });
-    }
-
-    const filePath = path.join(uploadDir, uniqueFileName);
-    console.log(`Saving file to: ${filePath}`);
-
     // Convertir le fichier en ArrayBuffer puis en Buffer
-    const bytes = await videoFile.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    const buffer = Buffer.from(await videoFile.arrayBuffer());
 
-    // Écrire le fichier
-    await writeFile(filePath, buffer);
-    
-    const publicUrl = `/uploads/${uniqueFileName}`;
+    // Initialize S3 client
+    const s3Client = new S3Client({
+      region: process.env.NEXT_PUBLIC_AWS_REGION,
+      credentials: {
+        accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID || "",
+        secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY || "",
+      },
+    });
 
-    return NextResponse.json({ 
-      success: true, 
+    // Define S3 path
+    const s3Key = `${process.env.NEXT_PUBLIC_S3_FOLDER}/${fileName}.webm`;
+
+    // Upload to S3
+    const params = {
+      Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET,
+      Key: s3Key,
+      Body: buffer,
+      ContentType: videoFile.type,
+    };
+
+    await s3Client.send(new PutObjectCommand(params));
+
+    // Generate public URL
+    const publicUrl = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/${s3Key}`;
+
+    return NextResponse.json({
+      success: true,
       filePath: publicUrl,
-      message: "Vidéo enregistrée avec succès"
+      message: "Vidéo enregistrée avec succès",
     });
   } catch (error) {
     console.error("Erreur lors de l'enregistrement de la vidéo:", error);
     return NextResponse.json(
-      { 
-        error: "Erreur lors de l'enregistrement de la vidéo", 
-        details: error instanceof Error ? error.message : "Unknown error" 
+      {
+        error: "Erreur lors de l'enregistrement de la vidéo",
+        details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
     );
   }
 }
+
+export const config = {
+  api: {
+    bodyParser: false, // Disable built-in bodyParser to handle file uploads
+  },
+};

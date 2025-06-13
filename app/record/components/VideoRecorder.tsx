@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import QuestionOverlay from './QuestionOverlay';
 
 interface VideoRecorderProps {
@@ -8,6 +9,7 @@ interface VideoRecorderProps {
 }
 
 const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
+  const router = useRouter(); // Add the router
   const [isRecording, setIsRecording] = useState(false);
   const [videoURL, setVideoURL] = useState<string | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -28,7 +30,7 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
   const redrawIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const autoStopTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Retravaillons complètement la méthode de dessin du canvas
+  // Retravaillons complètement la méthode de dessin du canvas pour une stabilité maximale
   const drawVideoAndQuestionOnCanvas = () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
@@ -38,32 +40,41 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
       return;
     }
     
-    const width = video.videoWidth || 640;
-    const height = video.videoHeight || 480;
+    const width = video.videoWidth || 1920;
+    const height = video.videoHeight || 1080;
     
+    // S'assurer que le canvas a les dimensions exactes de la vidéo
     if (canvas.width !== width || canvas.height !== height) {
       canvas.width = width;
       canvas.height = height;
     }
     
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: false }); // Désactiver l'alpha pour de meilleures performances
     if (!ctx) return;
     
-    // Dessiner l'image vidéo sur le canvas
+    // 1. Dessiner l'image vidéo sur le canvas avec des paramètres optimisés
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(video, 0, 0, width, height);
     
-    // TOUJOURS dessiner la question sur le canvas avec une méthode simple et robuste
+    // 2. TOUJOURS dessiner la question sur le canvas avec une méthode plus stable
     if (showQuestion && questions.length > 0 && currentQuestionIndex < questions.length) {
-      // MÉTHODE ULTRA-SIMPLE POUR LES QUESTIONS
       const questionText = questions[currentQuestionIndex];
       
-      // Dessiner un grand bloc noir en bas de l'écran
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.9)'; // Fond noir très opaque
+      // Enregistrer l'état du contexte avant de dessiner la question
+      ctx.save();
+      
+      // Utiliser globalCompositeOperation pour un rendu plus stable
+      ctx.globalCompositeOperation = 'source-over';
+      
+      // Dessiner un grand bloc noir OPAQUE en bas de l'écran (pas de transparence)
+      ctx.fillStyle = '#000000'; // Noir 100% opaque
       const blockHeight = Math.min(height * 0.25, 150);
       ctx.fillRect(0, height - blockHeight, width, blockHeight);
       
       // Ajouter une bordure blanche en haut du bloc
-      ctx.strokeStyle = 'white';
+      ctx.strokeStyle = '#FFFFFF'; // Blanc 100% opaque
       ctx.lineWidth = 3;
       ctx.beginPath();
       ctx.moveTo(0, height - blockHeight);
@@ -71,28 +82,87 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
       ctx.stroke();
       
       // Numéro de question en gros et en blanc
-      ctx.fillStyle = 'white';
+      ctx.fillStyle = '#FFFFFF'; // Blanc 100% opaque
       const fontSize = Math.min(height * 0.05, 30);
-      ctx.font = `bold ${fontSize}px Arial`;
+      // Utiliser une police plus robuste
+      ctx.font = `bold ${fontSize}px Arial, Helvetica, sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
+      
+      // Dessiner avec une ombre pour meilleure lisibilité
+      ctx.shadowColor = '#000000';
+      ctx.shadowBlur = 4;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 2;
+      
+      // Dessiner le numéro de question
+      const questionNumberText = `Question ${currentQuestionIndex + 1}/${questions.length}`;
       ctx.fillText(
-        `Question ${currentQuestionIndex + 1}/${questions.length}`,
+        questionNumberText,
         width / 2,
         height - blockHeight + 15
       );
       
-      // Texte de la question
+      // Texte de la question avec des paramètres optimisés
       const questionFontSize = Math.min(height * 0.04, 24);
-      ctx.font = `${questionFontSize}px Arial`;
+      ctx.font = `${questionFontSize}px Arial, Helvetica, sans-serif`;
+      
+      // Dessiner le texte de la question
       ctx.fillText(
         questionText,
         width / 2,
         height - blockHeight + fontSize + 25
       );
+      
+      // Restaurer l'état du contexte après avoir dessiné la question
+      ctx.restore();
+      
+      // Forcer un redessinage immédiat des éléments clés
+      if (redrawIntervalRef.current === null) {
+        redrawIntervalRef.current = setInterval(() => {
+          if (ctx && showQuestion) {
+            // Redessiner uniquement la barre de questions pour stabilité
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, height - blockHeight, width, blockHeight);
+            
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(0, height - blockHeight);
+            ctx.lineTo(width, height - blockHeight);
+            ctx.stroke();
+            
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = `bold ${fontSize}px Arial, Helvetica, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.shadowColor = '#000000';
+            ctx.shadowBlur = 4;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 2;
+            
+            ctx.fillText(
+              questionNumberText,
+              width / 2,
+              height - blockHeight + 15
+            );
+            
+            ctx.font = `${questionFontSize}px Arial, Helvetica, sans-serif`;
+            ctx.fillText(
+              questionText,
+              width / 2,
+              height - blockHeight + fontSize + 25
+            );
+          }
+        }, 100); // Redessiner 10 fois par seconde pour garantir la stabilité
+      }
+    } else if (redrawIntervalRef.current) {
+      // Si les questions ne sont plus affichées, arrêter le redessinage forcé
+      clearInterval(redrawIntervalRef.current);
+      redrawIntervalRef.current = null;
     }
     
-    // Continuer la boucle d'animation
+    // Continuer la boucle d'animation avec une priorité élevée
     animationFrameRef.current = requestAnimationFrame(drawVideoAndQuestionOnCanvas);
   };
   
@@ -152,29 +222,32 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
   // Fonction pour envoyer la vidéo au serveur
   const uploadVideoToServer = async (videoBlob: Blob) => {
     try {
-      setUploadStatus("Envoi en cours...");
+      setUploadStatus("Envoi en cours vers AWS S3...");
       
       const formData = new FormData();
-      formData.append("video", videoBlob, `video-interview-${new Date().toISOString()}.webm`);
-      formData.append("fileName", `video-interview-${new Date().toISOString()}`);
+      const fileName = `video-interview-${new Date().toISOString().replace(/[:.]/g, '-')}`;
+      formData.append("video", videoBlob, `${fileName}.webm`);
+      formData.append("fileName", fileName);
       
+      // Make sure we're using the correct API endpoint
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
       
       if (!response.ok) {
-        throw new Error(`Erreur de serveur: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`Erreur de serveur: ${response.status} - ${errorData.error || ''}`);
       }
       
       const result = await response.json();
-      setUploadStatus("Vidéo enregistrée avec succès!");
+      setUploadStatus("Vidéo enregistrée avec succès sur AWS S3!");
       setSavedVideoPath(result.filePath);
       
       return result.filePath;
     } catch (error) {
       console.error("Erreur lors de l'envoi de la vidéo:", error);
-      setUploadStatus("Échec de l'enregistrement sur le serveur");
+      setUploadStatus("Échec de l'enregistrement sur AWS S3");
       return null;
     }
   };
@@ -572,11 +645,6 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
     }
   }, [currentQuestionIndex, questions, isRecording, showQuestion, drawQuestionOverlay]); // Added drawQuestionOverlay
 
-  // Remove the unused debug function or use it somewhere if needed
-  // const drawQuestionOverlayDebug = () => {
-  //   // Function removed to fix ESLint warning
-  // };
-
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   const drawQuestionOverlayDebug = () => {
     if (!canvasRef.current || !videoRef.current) return;
@@ -643,6 +711,11 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
         from { transform: translateY(20px); opacity: 0; }
         to { transform: translateY(0); opacity: 1; }
       }
+      
+      @keyframes slide {
+        0% { background-position: 0 0; }
+        100% { background-position: 60px 60px; }
+      }
 
       .animate-fadeIn {
         animation: fadeIn 0.3s ease-out forwards;
@@ -650,6 +723,20 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
 
       .animate-slideIn {
         animation: slideIn 0.4s ease-out forwards;
+      }
+      
+      .animate-slide {
+        animation: slide 3s linear infinite;
+      }
+      
+      .shadow-glow {
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+      }
+      
+      .bg-grid-pattern {
+        background-image: linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px), 
+                          linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+        background-size: 20px 20px;
       }
     `;
     
@@ -665,7 +752,7 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
   return (
     <div className="flex flex-col items-center gap-4 bg-transparent">
       <div 
-        className="relative w-full max-w-4xl aspect-video rounded-lg overflow-hidden shadow-xl"
+        className="relative w-full max-w-6xl aspect-video rounded-lg overflow-hidden shadow-xl"
         style={{
           backgroundImage: !isRecording && !videoURL ? 'url("/bg_video.jpg")' : 'none',
           backgroundSize: 'cover',
@@ -752,41 +839,68 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
         {!isRecording ? (
           <button
             onClick={startRecording}
-            disabled={isPreparing || countdown !== null}
-            className={`px-6 py-3 ${isPreparing || countdown !== null ? 'bg-gray-400' : 'bg-red-600 hover:bg-red-700'} text-white rounded-md shadow-lg transform transition hover:scale-105`}
+            disabled={isRecording || isPreparing}
+            className="group relative overflow-hidden rounded-full bg-gradient-to-r from-red-600 to-orange-600 px-8 py-4 text-xl font-bold text-white transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(239,68,68,0.5)]"
           >
-            {isPreparing ? 'Préparation...' : countdown !== null ? `Décompte: ${countdown}` : 'Démarrer l&apos;enregistrement'}
+            <span className="relative z-10">
+              {isPreparing ? "Préparation..." : "Démarrer l'enregistrement"}
+            </span>
+            <span className="absolute inset-0 bg-gradient-to-r from-red-500 to-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
           </button>
-        ) : (
-          <button
-            onClick={stopRecording}
-            className="px-6 py-3 bg-gray-600 text-white rounded-md hover:bg-gray-700 shadow-lg transform transition hover:scale-105"
-          >
-            Arrêter l&apos;enregistrement
-          </button>
-        )}
+        ) : null}
       </div>
+
+      {/* Indicateur d'enregistrement */}
+      {isRecording && (
+        <div className="mt-4 text-center bg-black/30 px-4 py-2 rounded-full text-white font-medium animate-pulse">
+          Enregistrement en cours... (répondez aux questions)
+        </div>
+      )}
       
       {/* Modal de la vidéo enregistrée */}
       {videoURL && showModal && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4 backdrop-blur-lg animate-fadeIn">
           <div className="bg-gray-800/90 backdrop-blur-sm rounded-xl shadow-2xl w-full max-w-3xl transform animate-slideIn overflow-hidden border border-gray-700/50">
-            {/* En-tête du modal */}
-            <div className="p-6 border-b border-gray-700 flex justify-between items-center bg-white/20 backdrop-blur-md">
-              <h3 className="text-xl font-semibold text-white flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-                Vidéo enregistrée
-              </h3>
-              <button 
-                onClick={() => setShowModal(false)}
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+            {/* En-tête du modal - Design amélioré */}
+            <div className="relative overflow-hidden">
+              {/* Gradient background with animation */}
+              <div className="absolute inset-0 bg-gradient-to-r from-indigo-800 via-purple-700 to-pink-800 opacity-90"></div>
+              
+              {/* Animated pattern overlay */}
+              <div className="absolute inset-0 bg-grid-pattern opacity-10 animate-slide"></div>
+              
+              {/* Content container */}
+              <div className="relative px-8 py-6 flex justify-between items-center z-10">
+                {/* Left side with icon and title */}
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center shadow-glow">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-white leading-tight tracking-wide">
+                      Vidéo enregistrée
+                    </h3>
+                    <p className="text-blue-200 text-sm">Prête à être visionnée et partagée</p>
+                  </div>
+                </div>
+                
+                {/* Close button */}
+                <button 
+                  onClick={() => setShowModal(false)}
+                  className="rounded-full h-10 w-10 bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/20 transition-all duration-300 hover:rotate-90 border border-white/20"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              {/* Decorative elements */}
+              <div className="absolute -bottom-6 left-0 w-full h-12 bg-gradient-to-b from-transparent to-gray-800/90"></div>
+              <div className="absolute bottom-0 left-1/4 w-24 h-24 rounded-full bg-blue-500/30 filter blur-xl"></div>
+              <div className="absolute top-0 right-1/4 w-20 h-20 rounded-full bg-purple-500/20 filter blur-xl"></div>
             </div>
             
             {/* Corps du modal */}
@@ -795,9 +909,9 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
               <div className="rounded-lg overflow-hidden shadow-lg">
                 <video 
                   src={videoURL} 
-                  controls 
-                  className="w-full aspect-video bg-black"
                   autoPlay
+                  loop
+                  className="w-full aspect-video bg-black"
                 />
               </div>
               
@@ -854,12 +968,15 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
                   a.click();
                   document.body.removeChild(a);
                 }}
-                className="flex-1 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium transition-colors flex items-center justify-center gap-2"
+                className="group relative overflow-hidden rounded-full bg-gradient-to-r from-red-600 to-orange-600 flex-1 px-5 py-3 text-white font-medium transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(239,68,68,0.5)]"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-                Télécharger la vidéo
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                  Télécharger la vidéo
+                </span>
+                <span className="absolute inset-0 bg-gradient-to-r from-red-500 to-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
               </button>
               
               {!savedVideoPath && (
@@ -876,12 +993,15 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
                       }
                     }
                   }}
-                  className="flex-1 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md font-medium transition-colors flex items-center justify-center gap-2"
+                  className="group relative overflow-hidden rounded-full bg-gradient-to-r from-indigo-600 to-blue-600 flex-1 px-5 py-3 text-white font-medium transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(79,70,229,0.5)]"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                  </svg>
-                  Sauvegarder sur le serveur
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                    </svg>
+                    Sauvegarder sur le serveur
+                  </span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 </button>
               )}
               
@@ -894,28 +1014,36 @@ const VideoRecorder = ({ questions = [] }: VideoRecorderProps) => {
                     setUploadStatus(null);
                     setShowModal(false);
                     localStorage.removeItem('recordedVideoURL');
+                    // Navigate to home page
+                    router.push('/');
                   }
                 }}
-                className="flex-1 px-5 py-2.5 bg-gray-600 hover:bg-gray-700 text-white rounded-md font-medium transition-colors flex items-center justify-center gap-2"
+                className="group relative overflow-hidden rounded-full bg-gradient-to-r from-gray-600 to-gray-700 flex-1 px-5 py-3 text-white font-medium transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(107,114,128,0.5)]"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
-                </svg>
-                Nouvel enregistrement
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+                  </svg>
+                  Nouvel enregistrement
+                </span>
+                <span className="absolute inset-0 bg-gradient-to-r from-gray-500 to-gray-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
               </button>
               
               {savedVideoPath && (
                 <a
                   href={savedVideoPath}
-                  className="flex-1 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-md font-medium transition-colors flex items-center justify-center gap-2"
+                  className="group relative overflow-hidden rounded-full bg-gradient-to-r from-green-600 to-emerald-600 flex-1 px-5 py-3 text-white font-medium transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(16,185,129,0.5)]"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                    <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
-                  </svg>
-                  Voir vidéo sauvegardée
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                      <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                    </svg>
+                    Voir vidéo sauvegardée
+                  </span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 </a>
               )}
             </div>
