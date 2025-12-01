@@ -6,6 +6,9 @@
 .pnp.js
 .yarn/install-state.gz
 
+# lambda dependencies
+/lambda/convert-webm-to-mp4/node_modules
+
 # testing
 /coverage
 

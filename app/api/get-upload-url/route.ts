@@ -8,6 +8,9 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const fileName = searchParams.get("fileName") || `video-${Date.now()}`;
     const fileType = searchParams.get("fileType") || "video/webm";
+    const extension = searchParams.get("extension") || "webm";
+    
+    console.log('🔑 Generating pre-signed URL for:', fileName, extension, fileType);
     
     // Initialize S3 client
     const s3Client = new S3Client({
@@ -18,8 +21,8 @@ export async function GET(request: Request) {
       },
     });
 
-    // Define S3 path
-    const s3Key = `${process.env.NEXT_PUBLIC_S3_FOLDER}/${fileName}.webm`;
+    // Define S3 path with correct extension
+    const s3Key = `${process.env.NEXT_PUBLIC_S3_FOLDER}/${fileName}.${extension}`;
 
     // Create the command for putting an object in S3
     const putObjectCommand = new PutObjectCommand({

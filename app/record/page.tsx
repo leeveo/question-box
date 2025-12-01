@@ -3,15 +3,16 @@
 import { useState, useEffect } from "react";
 import VideoRecorder from './components/VideoRecorder';
 
+// Liste des questions à afficher
+const questions = [
+  "Quelle place TF1 occupe-t-elle selon vous dans l’histoire de la télévision française ?",
+  "Quel programme culte diffusé sur TF1 vous a le plus marqué dans votre jeunesse ?",
+  "Quel présentateur ou présentatrice emblématique de TF1 associez-vous le plus à la chaîne ?",
+  "Comment TF1 a-t-elle changé selon vous entre les années 1990 et aujourd’hui ?",
+  "Quelle place TF1 occupe-t-elle selon vous dans l’histoire de la télévision française ?"
+];
+
 export default function RecordPage() {
-  // Liste des questions à afficher
-  const questions = [
-    "Quelle place TF1 occupe-t-elle selon vous dans l’histoire de la télévision française ?",
-    "Quel programme culte diffusé sur TF1 vous a le plus marqué dans votre jeunesse ?",
-    "Quel présentateur ou présentatrice emblématique de TF1 associez-vous le plus à la chaîne ?",
-    "Comment TF1 a-t-elle changé selon vous entre les années 1990 et aujourd’hui ?",
-    "Quelle place TF1 occupe-t-elle selon vous dans l’histoire de la télévision française ?"
-  ];
 
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [particles, setParticles] = useState<React.ReactNode[]>([]);
@@ -55,7 +56,7 @@ export default function RecordPage() {
       {/* Background image */}
       <div className="absolute inset-0 z-0">
         {isMounted && (
-          <div 
+          <div
             className="w-full h-full bg-cover bg-center bg-fixed"
             style={{ backgroundImage: 'url("/tf1.jpg")' }}
           ></div>
@@ -71,9 +72,9 @@ export default function RecordPage() {
           style={
             isMounted
               ? {
-                  transform: `translate3d(${mousePosition.x * 20}px, ${mousePosition.y * 20}px, 0)`,
-                  transition: "transform 0.2s ease-out",
-                }
+                transform: `translate3d(${mousePosition.x * 20}px, ${mousePosition.y * 20}px, 0)`,
+                transition: "transform 0.2s ease-out",
+              }
               : {}
           }
         ></div>
@@ -82,9 +83,9 @@ export default function RecordPage() {
           style={
             isMounted
               ? {
-                  transform: `translate3d(${mousePosition.x * -30}px, ${mousePosition.y * -30}px, 0)`,
-                  transition: "transform 0.3s ease-out",
-                }
+                transform: `translate3d(${mousePosition.x * -30}px, ${mousePosition.y * -30}px, 0)`,
+                transition: "transform 0.3s ease-out",
+              }
               : {}
           }
         ></div>
@@ -100,26 +101,17 @@ export default function RecordPage() {
           style={
             isMounted
               ? {
-                  transform: `translate3d(${mousePosition.x * -5}px, ${mousePosition.y * -5}px, 0)`,
-                  transition: "transform 0.1s ease-out",
-                }
+                transform: `translate3d(${mousePosition.x * -5}px, ${mousePosition.y * -5}px, 0)`,
+                transition: "transform 0.1s ease-out",
+              }
               : {}
           }
         >
           <div className="bg-black/30 p-6 rounded-xl mt-8 backdrop-blur-sm">
             <VideoRecorder questions={questions} />
           </div>
-          
-          {/* Navigation buttons with matching styles from home page */}
-          <div className="flex justify-center mt-26 gap-4">
-            <button
-              onClick={() => window.history.back()}
-              className="group relative overflow-hidden rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-8 py-4 text-xl font-bold text-white transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(124,58,237,0.5)]"
-            >
-              <span className="relative z-10">Retour</span>
-              <span className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-            </button>
-          </div>
+
+
         </div>
       </div>
 
