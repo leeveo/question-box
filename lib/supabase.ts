@@ -23,6 +23,7 @@ export type Project = {
     id: string
     user_id: string
     name: string
+    description?: string | null
     slug: string
     background_image_url: string | null
     response_duration?: number
