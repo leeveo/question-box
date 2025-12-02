@@ -113,29 +113,41 @@ export default function LoginPage() {
             </div>
 
             {/* Right Column - Login Form (2/3) */}
-            <div className="w-full lg:w-2/3 flex items-center justify-center p-8">
-                <div className="w-full max-w-md">
+            <div className="w-full lg:w-2/3 flex items-center justify-center p-8 relative overflow-hidden">
+                {/* Background Image */}
+                <div className="absolute inset-0 z-0">
+                    <img 
+                        src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1920&auto=format&fit=crop" 
+                        alt="Background" 
+                        className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/20 backdrop-blur-sm"></div>
+                </div>
+
+                <div className="w-full max-w-md relative z-10">
                     {/* Mobile Logo */}
                     <div className="text-center mb-8 lg:hidden">
                         <div className="flex justify-center mb-4">
                             <img src="/logo.png" alt="Waibox Logo" className="h-20 w-20 drop-shadow-lg" />
                         </div>
-                        <h1 className="text-3xl font-bold text-gray-800 mb-2">Waibox</h1>
-                        <p className="text-gray-500">Connectez-vous à votre compte</p>
+                        <h1 className="text-3xl font-bold text-white mb-2 drop-shadow-md">Waibox</h1>
+                        <p className="text-white/80 drop-shadow-sm">Connectez-vous à votre compte</p>
                     </div>
 
                     {/* Login Form Card */}
-                    <div className="bg-white rounded-lg shadow-sm p-8 border border-gray-100">
-                        <h2 className="text-2xl font-bold text-gray-800 mb-6">Connexion</h2>
+                    <div className="bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/20 relative overflow-hidden">
+                        {/* Glass reflection effect */}
+                        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/10 to-transparent pointer-events-none"></div>
+                        <h2 className="text-2xl font-bold text-white mb-6 text-center drop-shadow-md">Connexion</h2>
 
-                        <form onSubmit={handleLogin} className="space-y-5">
+                        <form onSubmit={handleLogin} className="space-y-5 relative z-10">
                             <div>
-                                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label htmlFor="email" className="block text-sm font-medium text-white/90 mb-2 shadow-sm">
                                     Email
                                 </label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="h-5 w-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
                                         </svg>
                                     </div>
@@ -145,19 +157,19 @@ export default function LoginPage() {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
-                                        className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7C4DFF] focus:border-transparent transition"
+                                        className="w-full pl-10 pr-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#7C4DFF] focus:border-transparent transition backdrop-blur-sm"
                                         placeholder="votre@email.com"
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label htmlFor="password" className="block text-sm font-medium text-white/90 mb-2 shadow-sm">
                                     Mot de passe
                                 </label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="h-5 w-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                         </svg>
                                     </div>
@@ -167,13 +179,13 @@ export default function LoginPage() {
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
-                                        className="w-full pl-10 pr-12 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7C4DFF] focus:border-transparent transition"
+                                        className="w-full pl-10 pr-12 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#7C4DFF] focus:border-transparent transition backdrop-blur-sm"
                                         placeholder="••••••••"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors focus:outline-none"
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-white/60 hover:text-white transition-colors focus:outline-none"
                                     >
                                         {showPassword ? (
                                             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -192,7 +204,7 @@ export default function LoginPage() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full bg-[#7C4DFF] hover:bg-[#6c42e0] text-white font-bold py-3 px-4 rounded-lg shadow-md shadow-purple-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full bg-[#7C4DFF] hover:bg-[#6c42e0] text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-purple-900/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02]"
                             >
                                 {loading ? (
                                     <span className="flex items-center justify-center">
@@ -206,15 +218,17 @@ export default function LoginPage() {
                             </button>
                         </form>
 
-                        <div className="mt-6 text-center">
-                            <p className="text-gray-600 text-sm">
+                        <div className="mt-6 text-center relative z-10">
+                            <p className="text-white/80 text-sm">
                                 Pas encore de compte ?{' '}
-                                <Link href="/signup" className="text-[#00BFA5] hover:text-[#008f7a] font-medium transition-colors">
+                                <Link href="/signup" className="text-white hover:text-purple-200 font-bold transition-colors underline decoration-2 decoration-purple-400/50 hover:decoration-purple-400">
                                     Créer un compte
                                 </Link>
                             </p>
                         </div>
                     </div>
+
+
                 </div>
             </div>
 

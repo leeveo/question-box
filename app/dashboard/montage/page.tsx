@@ -283,6 +283,72 @@ export default function MontagePage() {
                 </p>
             </div>
 
+            {/* Mini Tutorial */}
+            <div className="mb-8 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-6 shadow-sm">
+                <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                   
+                    Comment créer un montage vidéo ?
+                </h3>
+                
+                <div className="space-y-4">
+                    <div className="flex gap-3">
+                        <div className="flex-shrink-0 w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">
+                            1
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="font-semibold text-gray-800 mb-1">Sélectionnez vos vidéos</h4>
+                            <p className="text-sm text-gray-600">
+                                Cliquez sur <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded font-medium">➕ Ajouter</span> pour choisir les vidéos à inclure dans votre montage.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                        <div className="flex-shrink-0 w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">
+                            2
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="font-semibold text-gray-800 mb-1">Ajustez les timings</h4>
+                            <p className="text-sm text-gray-600">
+                                Utilisez les sliders <span className="font-medium text-purple-600">Début</span> et <span className="font-medium text-purple-600">Fin</span> pour découper chaque clip. La vidéo se positionne automatiquement.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                        <div className="flex-shrink-0 w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">
+                            3
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="font-semibold text-gray-800 mb-1">Organisez l'ordre</h4>
+                            <p className="text-sm text-gray-600">
+                                Cliquez sur les flèches <span className="font-medium">⬆️ ⬇️</span> pour réorganiser l'ordre des vidéos dans votre montage final.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                        <div className="flex-shrink-0 w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">
+                            4
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="font-semibold text-gray-800 mb-1">Créez votre montage</h4>
+                            <p className="text-sm text-gray-600">
+                                Cliquez sur <span className="px-2 py-0.5 bg-purple-600 text-white rounded font-medium">                                                   
+                    Créer le montage</span> et patientez quelques minutes. Votre vidéo sera prête en HD !
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-5 pt-4 border-t border-purple-200">
+                    <p className="text-xs text-gray-500 flex items-center gap-2">
+                        <span className="text-lg">💡</span>
+                        <span><strong>Astuce :</strong> Prévisualisez vos clips avec les contrôles vidéo avant de créer le montage final.</span>
+                    </p>
+                </div>
+            </div>
+
             {/* Sélecteur de projet */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
                 <label className="block text-sm font-semibold text-gray-700 mb-3">
@@ -775,70 +841,7 @@ export default function MontagePage() {
                 </div>
             )}
 
-            {/* Mini Tutorial */}
-            <div className="mt-6 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-6 shadow-sm">
-                <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                   
-                    Comment créer un montage vidéo ?
-                </h3>
-                
-                <div className="space-y-4">
-                    <div className="flex gap-3">
-                        <div className="flex-shrink-0 w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">
-                            1
-                        </div>
-                        <div className="flex-1">
-                            <h4 className="font-semibold text-gray-800 mb-1">Sélectionnez vos vidéos</h4>
-                            <p className="text-sm text-gray-600">
-                                Cliquez sur <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded font-medium">➕ Ajouter</span> pour choisir les vidéos à inclure dans votre montage.
-                            </p>
-                        </div>
-                    </div>
 
-                    <div className="flex gap-3">
-                        <div className="flex-shrink-0 w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">
-                            2
-                        </div>
-                        <div className="flex-1">
-                            <h4 className="font-semibold text-gray-800 mb-1">Ajustez les timings</h4>
-                            <p className="text-sm text-gray-600">
-                                Utilisez les sliders <span className="font-medium text-purple-600">Début</span> et <span className="font-medium text-purple-600">Fin</span> pour découper chaque clip. La vidéo se positionne automatiquement.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="flex gap-3">
-                        <div className="flex-shrink-0 w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">
-                            3
-                        </div>
-                        <div className="flex-1">
-                            <h4 className="font-semibold text-gray-800 mb-1">Organisez l'ordre</h4>
-                            <p className="text-sm text-gray-600">
-                                Cliquez sur les flèches <span className="font-medium">⬆️ ⬇️</span> pour réorganiser l'ordre des vidéos dans votre montage final.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="flex gap-3">
-                        <div className="flex-shrink-0 w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">
-                            4
-                        </div>
-                        <div className="flex-1">
-                            <h4 className="font-semibold text-gray-800 mb-1">Créez votre montage</h4>
-                            <p className="text-sm text-gray-600">
-                                Cliquez sur <span className="px-2 py-0.5 bg-purple-600 text-white rounded font-medium"> Créer le montage</span> et patientez quelques minutes. Votre vidéo sera prête en HD !
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="mt-5 pt-4 border-t border-purple-200">
-                    <p className="text-xs text-gray-500 flex items-center gap-2">
-                        <span className="text-lg">💡</span>
-                        <span><strong>Astuce :</strong> Prévisualisez vos clips avec les contrôles vidéo avant de créer le montage final.</span>
-                    </p>
-                </div>
-            </div>
         </div>
     );
 }

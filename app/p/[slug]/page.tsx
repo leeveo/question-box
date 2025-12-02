@@ -35,10 +35,7 @@ export default function PublicRecordingPage() {
         try {
             // Load project by slug
             const { data: projectData, error: projectError } = await supabase
-                .from('projects')
-                .select('*')
-                .eq('slug', slug)
-                .eq('is_active', true)
+                .rpc('get_public_project', { slug_text: slug })
                 .single();
 
             if (projectError) {
@@ -51,14 +48,11 @@ export default function PublicRecordingPage() {
                 return;
             }
 
-            setProject(projectData);
+            setProject(projectData as Project);
 
             // Load questions
             const { data: questionsData, error: questionsError } = await supabase
-                .from('questions')
-                .select('*')
-                .eq('project_id', projectData.id)
-                .order('order', { ascending: true });
+                .rpc('get_public_questions', { project_id_input: (projectData as Project).id });
 
             if (questionsError) throw questionsError;
 

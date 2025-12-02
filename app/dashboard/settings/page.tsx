@@ -125,7 +125,7 @@ export default function SettingsPage() {
                         </label>
                         <input
                             type="email"
-                            value={user?.email}
+                            value={user?.email || ''}
                             disabled
                             className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 cursor-not-allowed"
                         />

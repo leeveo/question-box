@@ -102,10 +102,10 @@ export default function ProjectsListPage() {
                         return (
                             <div
                                 key={project.id}
-                                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden border border-gray-100"
+                                className="bg-white rounded-2xl shadow-lg hover:shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 hover:-translate-y-1 group"
                             >
                                 {/* Project Header/Image */}
-                                <div className="relative h-40 bg-gray-100">
+                                <div className="relative h-48 bg-gray-100 group-hover:brightness-105 transition-all">
                                     {project.background_image_url ? (
                                         <img
                                             src={project.background_image_url}
@@ -113,16 +113,16 @@ export default function ProjectsListPage() {
                                             className="w-full h-full object-cover"
                                         />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-blue-50 to-purple-50">
-                                            <svg className="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50">
+                                            <svg className="w-16 h-16 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
                                         </div>
                                     )}
-                                    <div className="absolute top-3 right-3">
-                                        <span className={`px-2 py-1 text-xs font-semibold rounded ${project.is_active
-                                                ? 'bg-green-100 text-green-600'
-                                                : 'bg-gray-100 text-gray-600'
+                                    <div className="absolute top-4 right-4">
+                                        <span className={`px-3 py-1 text-xs font-bold rounded-full shadow-sm backdrop-blur-md ${project.is_active
+                                                ? 'bg-green-100/90 text-green-700'
+                                                : 'bg-gray-100/90 text-gray-600'
                                             }`}>
                                             {project.is_active ? 'ACTIF' : 'INACTIF'}
                                         </span>
@@ -130,52 +130,52 @@ export default function ProjectsListPage() {
                                 </div>
 
                                 {/* Project Body */}
-                                <div className="p-5">
-                                    <h3 className="text-lg font-bold text-gray-800 mb-1">{project.name}</h3>
-                                    <p className="text-gray-500 text-xs mb-4 uppercase tracking-wide">/{project.slug}</p>
+                                <div className="p-6">
+                                    <div className="mb-6">
+                                        <h3 className="text-xl font-bold text-gray-800 mb-1 leading-tight">{project.name}</h3>
+                                        <p className="text-gray-400 text-xs font-medium uppercase tracking-wider">/{project.slug}</p>
+                                    </div>
 
                                     {/* Public URL Section */}
-                                    <div className="mb-4 p-3 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-100">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <span className="text-xs font-semibold text-gray-700">URL Publique</span>
+                                    <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-100 group-hover:border-purple-100 transition-colors">
+                                        <div className="flex items-center justify-between mb-3">
+                                            <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">Lien Public</span>
                                             <button
                                                 onClick={() => copyPublicUrl(project.slug, project.id)}
-                                                className="text-xs px-2 py-1 bg-white hover:bg-gray-50 text-gray-700 rounded border border-gray-200 transition-colors"
+                                                className="text-xs px-3 py-1.5 bg-white hover:bg-purple-50 text-gray-600 hover:text-purple-600 rounded-lg border border-gray-200 hover:border-purple-200 transition-all font-medium shadow-sm"
                                             >
-                                                {copiedId === project.id ? '✓ Copié' : 'Copier'}
+                                                {copiedId === project.id ? '✓ Copié' : 'Copier le lien'}
                                             </button>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <input
-                                                type="text"
-                                                value={publicUrl}
-                                                readOnly
-                                                className="flex-1 px-2 py-1 bg-white border border-gray-200 rounded text-xs text-gray-600 truncate"
-                                            />
+                                            <div className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-500 truncate font-mono">
+                                                {publicUrl}
+                                            </div>
                                         </div>
                                     </div>
 
                                     {/* QR Code */}
-                                    <div className="mb-4 flex justify-center p-3 bg-white border border-gray-200 rounded-lg">
+                                    <div className="mb-6 flex justify-center p-4 bg-white border border-gray-100 rounded-xl shadow-sm group-hover:shadow-md transition-all">
                                         <QRCodeSVG
                                             value={publicUrl}
-                                            size={120}
+                                            size={100}
                                             level="M"
-                                            includeMargin={true}
+                                            includeMargin={false}
+                                            className="w-24 h-24"
                                         />
                                     </div>
 
                                     {/* Action Buttons */}
-                                    <div className="flex items-center justify-between pt-4 border-t border-gray-50">
+                                    <div className="grid grid-cols-2 gap-3 pt-2">
                                         <Link
                                             href={`/dashboard/projects/${project.id}`}
-                                            className="text-sm font-medium text-gray-600 hover:text-[#7C4DFF] transition-colors"
+                                            className="flex items-center justify-center px-4 py-2.5 bg-gradient-to-r from-[#7C4DFF] to-purple-600 text-white hover:from-purple-600 hover:to-[#7C4DFF] rounded-xl text-sm font-semibold transition-all shadow-md hover:shadow-lg"
                                         >
                                             Gérer
                                         </Link>
                                         <Link
                                             href={`/dashboard/projects/${project.id}/videos`}
-                                            className="text-sm font-medium text-[#00BFA5] hover:text-[#008f7a] transition-colors"
+                                            className="flex items-center justify-center px-4 py-2.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-xl text-sm font-semibold transition-all"
                                         >
                                             Voir Vidéos
                                         </Link>

@@ -152,16 +152,14 @@ export default function DashboardLayout({
                 {/* Sidebar Header (Purple) */}
                 <div className="h-16 bg-[#7C4DFF] flex items-center px-6 shadow-md">
                     <div className="flex items-center gap-3">
-                        <div className="bg-white p-1 rounded-full">
-                            <img src="/logo.png" alt="Logo" className="h-6 w-6" />
-                        </div>
+                        <img src="/logo.png" alt="Logo" className="h-8 w-8" />
                         <span className="text-white text-xl font-bold tracking-wide">Waibox</span>
                     </div>
                 </div>
 
                 {/* Navigation Links */}
-                <nav className="p-4 space-y-1 mt-4">
-                    <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 px-4">Menu Principal</div>
+                <nav className="p-4 space-y-2 mt-4">
+                    <div className="text-[11px] font-bold text-gray-400/80 uppercase tracking-widest mb-4 px-4">Menu Principal</div>
                     {navigation.map((item) => {
                         // Improved active state logic:
                         // - 'Projets' (href='/dashboard') is active for '/dashboard' AND '/dashboard/projects/*'
@@ -174,13 +172,16 @@ export default function DashboardLayout({
                             <Link
                                 key={item.name}
                                 href={item.href}
-                                className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${isActive
-                                    ? 'bg-[#F3F4F6] text-[#7C4DFF] border-r-4 border-[#7C4DFF]'
-                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                className={`relative flex items-center px-4 py-3.5 text-sm font-medium rounded-xl transition-all duration-300 group ${isActive
+                                    ? 'bg-[#7C4DFF] text-white shadow-lg shadow-purple-200 translate-x-1'
+                                    : 'text-gray-600 hover:bg-purple-50 hover:text-[#7C4DFF] hover:translate-x-1'
                                     }`}
                             >
-                                <span className={`mr-3 ${isActive ? 'text-[#7C4DFF]' : 'text-gray-400'}`}>{item.icon}</span>
+                                <span className={`mr-3 transition-colors duration-300 ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-[#7C4DFF]'}`}>{item.icon}</span>
                                 {item.name}
+                                {isActive && (
+                                    <div className="absolute right-3 w-1.5 h-1.5 rounded-full bg-white/50"></div>
+                                )}
                             </Link>
                         );
                     })}
@@ -188,6 +189,11 @@ export default function DashboardLayout({
 
                 {/* Logout Button */}
                 <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100">
+                    <div className="mb-4 p-4 bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl border border-purple-100 shadow-sm">
+                        <p className="text-xs font-medium text-purple-800 text-center leading-relaxed">
+                            ✨ Créez votre boîte à question ou livre d'or vidéo en quelques clics
+                        </p>
+                    </div>
                     <button
                         onClick={() => signOut()}
                         className="flex items-center w-full px-4 py-3 text-sm font-medium text-gray-600 rounded-lg hover:bg-red-50 hover:text-red-500 transition-colors"

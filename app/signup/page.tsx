@@ -51,51 +51,77 @@ export default function SignupPage() {
         <div className="min-h-screen flex bg-[#F3F4F6]">
             {/* Left Column - Violet (1/3) */}
             <div className="hidden lg:flex lg:w-1/3 bg-[#7C4DFF] relative overflow-hidden">
+                {/* Decorative elements */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+                <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+                
                 <div className="relative z-10 flex flex-col justify-center px-12 text-white">
                     {/* Logo */}
                     <div className="flex justify-center mb-8">
-                        <div className="bg-white p-4 rounded-full shadow-lg">
-                            <img src="/logo.png" alt="Waibox Logo" className="h-20 w-20" />
-                        </div>
+                        <img src="/logo.png" alt="Waibox Logo" className="h-24 w-24 drop-shadow-2xl" />
                     </div>
 
-                    <h1 className="text-4xl font-bold mb-4 text-center">Waibox</h1>
-                    <p className="text-lg text-purple-100 mb-8 text-center leading-relaxed">
-                        Rejoignez la plateforme et commencez à créer vos projets d'interviews vidéo en quelques minutes.
+                    <h1 className="text-5xl font-bold mb-4 text-center bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-100 to-pink-100">
+                        Waibox
+                    </h1>
+                    <p className="text-xl text-white/90 mb-10 text-center leading-relaxed font-light">
+                        Créez des interviews vidéo extraordinaires en quelques clics
                     </p>
 
                     <div className="space-y-4">
-                        <div className="flex items-center space-x-3">
-                            <div className="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
-                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                </svg>
+                        <div className="group relative overflow-hidden rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 p-5 hover:bg-white/15 transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105">
+                            <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            <div className="relative">
+                                <h3 className="text-white font-bold text-xl mb-1 bg-clip-text text-transparent bg-gradient-to-r from-cyan-200 to-white">
+                                    Enregistrement HD
+                                </h3>
+                                <p className="text-purple-100/80 text-sm">
+                                    Qualité cinéma garantie pour vos interviews
+                                </p>
                             </div>
-                            <span className="text-purple-50">Démarrage rapide</span>
                         </div>
-                        <div className="flex items-center space-x-3">
-                            <div className="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
-                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
+
+                        <div className="group relative overflow-hidden rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 p-5 hover:bg-white/15 transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105">
+                            <div className="absolute inset-0 bg-gradient-to-br from-pink-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            <div className="relative">
+                                <h3 className="text-white font-bold text-xl mb-1 bg-clip-text text-transparent bg-gradient-to-r from-pink-200 to-white">
+                                    Multi-projets
+                                </h3>
+                                <p className="text-purple-100/80 text-sm">
+                                    Organisez tous vos projets en un seul endroit
+                                </p>
                             </div>
-                            <span className="text-purple-50">Personnalisation complète</span>
                         </div>
-                        <div className="flex items-center space-x-3">
-                            <div className="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
-                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
+
+                        <div className="group relative overflow-hidden rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 p-5 hover:bg-white/15 transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105">
+                            <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            <div className="relative">
+                                <h3 className="text-white font-bold text-xl mb-1 bg-clip-text text-transparent bg-gradient-to-r from-emerald-200 to-white">
+                                    Ultra-sécurisé
+                                </h3>
+                                <p className="text-purple-100/80 text-sm">
+                                    Vos données protégées avec cryptage de bout en bout
+                                </p>
                             </div>
-                            <span className="text-purple-50">Validation automatique</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Right Column - Signup Form (2/3) */}
-            <div className="w-full lg:w-2/3 flex items-center justify-center p-8">
-                <div className="w-full max-w-md">
+            <div className="w-full lg:w-2/3 flex items-center justify-center p-8 relative overflow-hidden">
+                {/* Background Image */}
+                <div className="absolute inset-0 z-0">
+                    <img 
+                        src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1920&auto=format&fit=crop" 
+                        alt="Background" 
+                        className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/20 backdrop-blur-sm"></div>
+                </div>
+
+                <div className="w-full max-w-md relative z-10">
                     {/* Mobile Logo */}
                     <div className="text-center mb-8 lg:hidden">
                         <div className="flex justify-center mb-4">
@@ -103,13 +129,16 @@ export default function SignupPage() {
                                 <img src="/logo.png" alt="Waibox Logo" className="h-16 w-16" />
                             </div>
                         </div>
-                        <h1 className="text-3xl font-bold text-gray-800 mb-2">Waibox</h1>
-                        <p className="text-gray-500">Créez votre compte administrateur</p>
+                        <h1 className="text-3xl font-bold text-white mb-2 drop-shadow-md">Waibox</h1>
+                        <p className="text-white/80 drop-shadow-sm">Créez votre compte administrateur</p>
                     </div>
 
                     {/* Signup Form Card */}
-                    <div className="bg-white rounded-lg shadow-sm p-8 border border-gray-100">
-                        <h2 className="text-2xl font-bold text-gray-800 mb-6">Inscription</h2>
+                    <div className="bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/20 relative overflow-hidden">
+                        {/* Glass reflection effect */}
+                        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/10 to-transparent pointer-events-none"></div>
+
+                        <h2 className="text-2xl font-bold text-white mb-6 text-center drop-shadow-md">Inscription</h2>
 
                         {error && (
                             <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-lg flex items-center gap-3">
@@ -120,14 +149,14 @@ export default function SignupPage() {
                             </div>
                         )}
 
-                        <form onSubmit={handleSignup} className="space-y-4">
+                        <form onSubmit={handleSignup} className="space-y-4 relative z-10">
                             <div>
-                                <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label htmlFor="fullName" className="block text-sm font-medium text-white/90 mb-2 shadow-sm">
                                     Nom complet
                                 </label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="h-5 w-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                         </svg>
                                     </div>
@@ -137,19 +166,19 @@ export default function SignupPage() {
                                         value={fullName}
                                         onChange={(e) => setFullName(e.target.value)}
                                         required
-                                        className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7C4DFF] focus:border-transparent transition"
+                                        className="w-full pl-10 pr-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#7C4DFF] focus:border-transparent transition backdrop-blur-sm"
                                         placeholder="Jean Dupont"
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Nom de l'entreprise <span className="text-gray-400">(optionnel)</span>
+                                <label htmlFor="companyName" className="block text-sm font-medium text-white/90 mb-2 shadow-sm">
+                                    Nom de l'entreprise <span className="text-white/50">(optionnel)</span>
                                 </label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="h-5 w-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                         </svg>
                                     </div>
@@ -158,19 +187,19 @@ export default function SignupPage() {
                                         type="text"
                                         value={companyName}
                                         onChange={(e) => setCompanyName(e.target.value)}
-                                        className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7C4DFF] focus:border-transparent transition"
+                                        className="w-full pl-10 pr-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#7C4DFF] focus:border-transparent transition backdrop-blur-sm"
                                         placeholder="Mon Entreprise"
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label htmlFor="email" className="block text-sm font-medium text-white/90 mb-2 shadow-sm">
                                     Email
                                 </label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="h-5 w-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
                                         </svg>
                                     </div>
@@ -180,19 +209,19 @@ export default function SignupPage() {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
-                                        className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7C4DFF] focus:border-transparent transition"
+                                        className="w-full pl-10 pr-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#7C4DFF] focus:border-transparent transition backdrop-blur-sm"
                                         placeholder="votre@email.com"
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label htmlFor="password" className="block text-sm font-medium text-white/90 mb-2 shadow-sm">
                                     Mot de passe
                                 </label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="h-5 w-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                         </svg>
                                     </div>
@@ -203,13 +232,13 @@ export default function SignupPage() {
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
                                         minLength={6}
-                                        className="w-full pl-10 pr-12 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7C4DFF] focus:border-transparent transition"
+                                        className="w-full pl-10 pr-12 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#7C4DFF] focus:border-transparent transition backdrop-blur-sm"
                                         placeholder="••••••••"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors focus:outline-none"
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-white/60 hover:text-white transition-colors focus:outline-none"
                                     >
                                         {showPassword ? (
                                             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -223,13 +252,13 @@ export default function SignupPage() {
                                         )}
                                     </button>
                                 </div>
-                                <p className="mt-1 text-xs text-gray-500">Minimum 6 caractères</p>
+                                <p className="mt-1 text-xs text-white/60">Minimum 6 caractères</p>
                             </div>
 
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full bg-[#00BFA5] hover:bg-[#008f7a] text-white font-bold py-3 px-4 rounded-lg shadow-md shadow-teal-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+                                className="w-full bg-[#00BFA5] hover:bg-[#008f7a] text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-teal-900/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-6 transform hover:scale-[1.02]"
                             >
                                 {loading ? (
                                     <span className="flex items-center justify-center">
@@ -243,10 +272,10 @@ export default function SignupPage() {
                             </button>
                         </form>
 
-                        <div className="mt-6 text-center">
-                            <p className="text-gray-600 text-sm">
+                        <div className="mt-6 text-center relative z-10">
+                            <p className="text-white/80 text-sm">
                                 Déjà un compte ?{' '}
-                                <Link href="/login" className="text-[#7C4DFF] hover:text-[#6c42e0] font-medium transition-colors">
+                                <Link href="/login" className="text-white hover:text-purple-200 font-bold transition-colors underline decoration-2 decoration-purple-400/50 hover:decoration-purple-400">
                                     Se connecter
                                 </Link>
                             </p>

@@ -88,8 +88,8 @@ export default function GlobalVideosPage() {
     return (
         <div>
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-white mb-2">Toutes les vidéos</h1>
-                <p className="text-gray-400">Gérez l'ensemble des vidéos enregistrées sur vos projets</p>
+                <h1 className="text-2xl font-bold text-gray-800">Galerie Vidéo</h1>
+                <p className="text-gray-500 text-sm mt-1">Gérez l'ensemble des vidéos enregistrées sur vos projets</p>
             </div>
 
             {videos.length === 0 ? (
@@ -107,46 +107,64 @@ export default function GlobalVideosPage() {
                     {videos.map((video) => (
                         <div
                             key={video.id}
-                            className="bg-white-800/50 backdrop-blur-sm rounded-xl overflow-hidden border border-gray-700 hover:border-purple-500 transition group"
+                            className="bg-white rounded-2xl shadow-lg hover:shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 hover:-translate-y-1 group"
                         >
                             {/* Video Preview */}
-                            <div className="relative aspect-video bg-gray-900">
+                            <div className="relative aspect-video bg-gray-100 group-hover:brightness-105 transition-all">
                                 <video
                                     src={video.s3_url}
                                     className="w-full h-full object-cover"
                                     controls
                                 />
-                                <div className="absolute top-2 left-2 bg-black/60 px-2 py-1 rounded text-xs text-white">
-                                    {video.projects?.name || 'Projet inconnu'}
+                                <div className="absolute top-3 left-3">
+                                    <span className="bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-purple-600 shadow-sm">
+                                        {video.projects?.name || 'Projet inconnu'}
+                                    </span>
                                 </div>
                             </div>
 
                             {/* Video Info */}
-                            <div className="p-4">
-                                {video.participant_name && (
-                                    <h3 className="text-white font-medium mb-2">{video.participant_name}</h3>
-                                )}
-
-                                <div className="space-y-1 text-sm text-black-400 mb-4">
-                                    <p> {formatDate(video.created_at)}</p>
-                                    {video.duration && <p>⏱️ {formatDuration(video.duration)}</p>}
+                            <div className="p-5">
+                                <div className="flex justify-between items-start mb-3">
+                                    <div>
+                                        <p className="text-gray-500 text-xs mt-1 font-medium">
+                                            {formatDate(video.created_at)}
+                                        </p>
+                                    </div>
+                                    {video.duration && (
+                                        <span className="flex items-center gap-1 text-xs font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded-md">
+                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                            {formatDuration(video.duration)}
+                                        </span>
+                                    )}
                                 </div>
 
                                 {/* Actions */}
-                                <div className="flex gap-2">
+                                <div className="flex gap-3 mt-4 pt-4 border-t border-gray-50">
                                     <a
                                         href={video.s3_url}
                                         download
-                                        className="flex-1 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-center rounded-lg transition text-sm font-medium"
+                                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#7C4DFF] to-purple-600 text-white hover:from-purple-600 hover:to-[#7C4DFF] rounded-xl transition-all shadow-md hover:shadow-lg text-sm font-semibold group/btn"
                                     >
+                                        <svg className="w-4 h-4 group-hover/btn:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                                         Télécharger
                                     </a>
                                     <button
                                         onClick={() => deleteVideo(video.id)}
                                         disabled={deleting === video.id}
-                                        className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition text-sm font-medium disabled:opacity-50"
+                                        className="px-4 py-2.5 bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-600 rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center"
+                                        title="Supprimer"
                                     >
-                                        {deleting === video.id ? '...' : 'Suppr.'}
+                                        {deleting === video.id ? (
+                                            <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                        ) : (
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        )}
                                     </button>
                                 </div>
                             </div>
